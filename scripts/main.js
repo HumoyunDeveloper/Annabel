@@ -97,7 +97,7 @@ const ep1 = {
             };
             M.push(obj);
             manipulateLast($("#messages"));
-            STATE = "MAVJUDOT";
+            !HIDDEN ? STATE = "MAVJUDOT" : null;
         },
         // LOOK
         () => {
@@ -182,7 +182,7 @@ const ep1 = {
             const obj = {
                 ...ep1,
                 msg:
-                    STATE !== "MASHINA"
+                    STATE != "MASHINA"
                         ? `Avval <span class="highlite">MASHINA</span> yoniga borish kerak...`
                         : `Siz <span class="highlite">MASHINA</span>ni o't oldirib, u yerdan ketdingiz...
                 Afsus, sizning hikoyangizga hech kim ishonmaydi..
