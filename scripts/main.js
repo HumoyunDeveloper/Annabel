@@ -25,6 +25,8 @@ const helpString = `
                 <button class="classic-btn">GO (PLACE)</button>
                 <button class="classic-btn">LOOK (SMTH)</button>
                 <button class="classic-btn">TOUCH (SMTH)</button>
+                <button class="classic-btn">GET OUT</button>
+                <button class="classic-btn">EXIT</button>
                 </div>`;
 
 const ep1 = {
