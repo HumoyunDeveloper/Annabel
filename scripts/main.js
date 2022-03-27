@@ -1,40 +1,9 @@
-// design
-// mod
-
-var STATE = "MASHINA";
-var HIDDEN = false;
-var clicked = false;
-
-const copyFunc = (_text) => {
-    let inp = document.createElement("input");
-    inp.value = _text;
-    inp.select();
-    document.execCommand("copy", true);
-};
-
-const scrollToBottom = (id) => {
-    const element = document.getElementById(id);
-    element.scrollTop = element.scrollHeight;
-};
-
-const HISTORY = [];
-
-const helpString = `
-                Ushbu epizod uchun buyruqlar ro'yhati:
-                <div class="flex">
-                <button class="classic-btn">GO (PLACE)</button>
-                <button class="classic-btn">LOOK (SMTH)</button>
-                <button class="classic-btn">TOUCH (SMTH)</button>
-                <button class="classic-btn">GET OUT</button>
-                <button class="classic-btn">EXIT</button>
-                </div>`;
-
-const ep1 = {
+const epz1 = {
     msg: `Oy nuri ostida <span class="highlite">MASHINA</span> haydab ketyapsiz. Soat chamasi 01:23 atrofida edi. 
           Yomg'ir yog'ar, yo'l esa juda sirpanchiq edi. Charchoq sababli <span class="highlite">MASHINA</span>ni to'xtatib 
           bir necha soat dam olishni hoxladingiz.
           Oradan biroz vaqt o'tgach, g'alati ovozlar tufayli uyg'onib ketdingiz va yo'lning o'rtasida
-          noma'lum <span class="highlite">MAVJUDOT</span>ni payqadingiz. <span class="highlite">MASHINA</span>dan tushdingiz.
+          noma'lum <span class="highlite">MAVJUDOT</span>ni payqadingiz. <span class="highlite">MASHINA</span>dan tushdingiz <span style="font-style: italic">("yordam" buyrug'i orqali yordam oling)</span>
           `,
     responses: [
         "YORDAM",
@@ -50,149 +19,150 @@ const ep1 = {
         "GET OUT",
         "EXIT",
     ],
+    generate() {
+        let text = "Ushbu epizod uchun barcha buyruqlar ro'yhati:";
+        this.responses.forEach((_) => {
+            text += "<p class='auto opt2'>[" + _ + "]</p>";
+        });
+        return text;
+    },
     exec: [
         // help
         () => {
             const obj = {
-                ...ep1,
-                msg: helpString,
+                ...epz1,
+                msg: epz1.generate(),
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
+            init();
         },
         // GO
         () => {
             const obj = {
-                ...ep1,
-                msg:
-                    "Iltimos, joy nomini kiriting misol: <span class='command'>GO MASHINA</span>",
+                ...epz1,
+                msg: "Iltimos, joy nomini kiriting misol: <span class='command'>GO MASHINA</span>",
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
         },
         // gMashina
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MASHINA"
+                    GAME.STATE === "MASHINA"
                         ? `Siz allaqachon <span class="highlite">MASHINA</span> yonidasiz.`
                         : `Siz <span class="highlite">MASHINA</span> oldiga bordingiz.`,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
-            STATE = "MASHINA";
+
+            GAME.addAndUpdate(obj);
+            GAME.STATE = "MASHINA";
         },
         // gMavjudot
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MAVJUDOT"
+                    GAME.STATE === "MAVJUDOT"
                         ? `Siz allaqachon <span class="highlite">MAVJUDOT</span> yonidasiz.`
-                        : HIDDEN
+                        : GAME.HIDDEN
                         ? "Menimcha u g'oyib bo'ldi. Bu yerdan tezroq ketish kerak!"
                         : `Siz <span class="highlite">MAVJUDOT</span> yoniga bordingiz. 
                         U o'girilib turar, va uning ko'rinishi sizni juda ham qo'rqitardi...`,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
-            !HIDDEN ? STATE = "MAVJUDOT" : null;
+
+            GAME.addAndUpdate(obj);
+            GAME.STATE = "MAVJUDOT";
         },
         // LOOK
         () => {
             const obj = {
-                ...ep1,
-                msg:
-                    "Iltimos, joy nomini kiriting, misol: <span class='command'>LOOK MASHINA</span>",
+                ...epz1,
+                msg: "Iltimos, joy nomini kiriting, misol: <span class='command'>LOOK MASHINA</span>",
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
         },
         // lMashina
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MASHINA"
+                    GAME.STATE === "MASHINA"
                         ? `Siz <span class="highlite">MASHINA</span>ga qaradingiz.`
                         : `<span class="highlite">MASHINA</span> uzoqdan ko'rimsiz edi.
                         OH, <span class="highlite">MAVJUDOT</span> yo'q bo'lib qoldi!
                         Qo'rqib ketdingiz, va <span class="highlite">MASHINA</span> tomonga yugurdingiz...
                         `,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
-            HIDDEN = true;
-            STATE = "MASHINA";
+
+            GAME.addAndUpdate(obj);
+            GAME.HIDDEN = true;
+            GAME.STATE = "MASHINA";
         },
         // lMavjudot
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MAVJUDOT"
+                    GAME.STATE === "MAVJUDOT"
                         ? `Siz <span class="highlite">MAVJUDOT</span>ga qaradingiz. Uning ho'rsillab nafas olishi sizni cho'chitardi...`
-                        : HIDDEN
+                        : GAME.HIDDEN
                         ? `Menimcha u go'yib bo'ldi. U yerdan tezroq ketishingiz kerak.`
                         : `Siz <span class="highlite">MAVJUDOT</span>ga qaradingiz. Menimcha unga yordam kerak...`,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
         },
         // TOUCH
         () => {
             const obj = {
-                ...ep1,
-                msg:
-                    "Iltimos, joy nomini kiriting, misol: <span class='command'>TOUCH MASHINA</span>",
+                ...epz1,
+                msg: "Iltimos, joy nomini kiriting, misol: <span class='command'>TOUCH MASHINA</span>",
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
         },
         // tMashina
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MASHINA"
+                    GAME.STATE === "MASHINA"
                         ? `Siz <span class="highlite">MASHINA</span>ni ushladingiz. Sovuq...`
                         : `<span class="highlite">MASHINA</span> bu yerdan ancha uzoq...
                         `,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+
+            GAME.addAndUpdate(obj);
         },
         // tMavjudot
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE === "MAVJUDOT"
+                    GAME.STATE === "MAVJUDOT"
                         ? `Qo'rquv...`
-                        : HIDDEN
+                        : GAME.HIDDEN
                         ? `Menimcha u go'yib bo'ldi. U yerdan tezroq ketishingiz kerak.`
                         : `<span class="highlite">MAVJUDOT</span> bu yerdan ancha uzoq...`,
             };
-            M.push(obj);
-            manipulateLast($("#messages"));
+            GAME.addAndUpdate(obj);
         },
         // GET OUT
         () => {
             const obj = {
-                ...ep1,
+                ...epz1,
                 msg:
-                    STATE != "MASHINA"
-                        ? `Avval <span class="highlite">MASHINA</span> yoniga borish kerak...`
+                    GAME.STATE !== "MASHINA"
+                        ? `Avval <span class="highlite">MASHINA</span> yoniga borishingiz kerak...`
                         : `Siz <span class="highlite">MASHINA</span>ni o't oldirib, u yerdan ketdingiz...
                 Afsus, sizning hikoyangizga hech kim ishonmaydi..
                 <br>`,
             };
-
-            M.push(obj);
-            manipulateLast($("#messages"));
-
-            if (STATE === "MASHINA") {
+            GAME.addAndUpdate(obj);
+            if (GAME.STATE === "MASHINA") {
                 M.push(M[0]);
                 manipulateLast($("#messages"));
             }
@@ -205,68 +175,157 @@ const ep1 = {
     ],
 };
 
+const GAME = {
+    currentEpisode: null,
+    STATE: "MASHINA",
+    HIDDEN: false,
+    clicked: false,
+    keyboardHistory: [],
+    snippets: {
+        freeSnippet: "Uzr, bu bo'lim hozircha bo'sh :(",
+        chooseEpz: `Hikoyalardan birini tanlang <span style='font-style: italic'>(raqam bilan)</span>:
+            <p class="opt"><span class="auto">[1]</span> Annabel #Episode_1 (test)</p>
+            <p class="opt"><span class="auto">[2]</span> Blank</p>
+            <p class="opt"><span class="auto">[3]</span> Blank</p>
+            <p class="opt"><span class="auto">[4]</span> Blank</p>
+            <p class="opt"><span class="auto">[5]</span> Yordam</p>
+            <p class="opt"><span class="auto">[6]</span> Haqida</p>
+            <p class="opt"><span class="auto">[7]</span> CLEAR</p>
+            `,
+        aboutSection: `
+                        <p>Dasturlovchi: Humoyun</p>
+                        <p>Hikoya: Madaminov Muhammadjon</p>
+                        <p style="font-style: italic">Har bir epizod real hayotga asoslangan.</p>
+                        `,
+        generalHelp:
+            "Har bir epizod uchun alohida buyruqlar ro'yhati mavjud. Olish uchun, avval biror epizodni tanlab 'yordam' buyrug'ini bering.",
+        epz1: {
+            helpString: ``,
+        },
+    },
+    episodes: [epz1],
+    copyFunc() {
+        let inp = document.createElement("input");
+        inp.value = _text;
+        inp.select();
+        document.execCommand("copy", true);
+    },
+    scrollToBottom(id) {
+        const element = document.getElementById(id);
+        element.scrollTop = element.scrollHeight;
+    },
+    addAndUpdate(_obj) {
+        M.push(_obj);
+        manipulateLast($("#messages"));
+    },
+    progressControl(_id, _label) {
+        let i = 0;
+        if (i == 0) {
+            i = 1;
+            let elem = document.getElementById(_id);
+            let label = document.getElementById(_label);
+            let width = 1;
+            let id = setInterval(frame, 100);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    document.querySelector("#pbar").style.display = "none";
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                    label.textContent = width + "%";
+                }
+            }
+        }
+    },
+};
+
+setInterval(() => {
+    design("#container", {
+        backgroundImage: "url('../res/unload.gif')",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+    });
+    setTimeout(() => {
+        document.getElementById("container").style.backgroundImage = "";
+    }, Math.random() * (2500 - 1000) + 1000);
+}, 1000 * 60);
+
+GAME.prototypes = [];
+
+GAME.prototypes.copyFunc = () => {
+    let inp = document.createElement("input");
+    inp.value = _text;
+    inp.select();
+    document.execCommand("copy", true);
+};
+
+GAME.progressControl("white", "label");
+
 const M = [
     {
         type: "bot",
-        msg: `Hikoyalardan birini tanlang:
-            <p class="opt">1: Annabel #Episode_1 (test)</p>
-            <p class="opt">2: Blank</p>
-            <p class="opt">3: Blank</p>
-            <p class="opt">4: Blank</p>
-            <p class="opt">5: Yordam</p>
-            <p class="opt">6: Haqida</p>
-            <p class="opt">7: CLEAR</p>
-            `,
+        msg: GAME.snippets.chooseEpz,
         responses: ["1", "2", "3", "4", "5", "6", "7"],
         exec: [
+            /* EPISODE 1, TEST */
             () => {
                 const obj = {
                     type: "bot",
-                    ...ep1,
+                    ...epz1,
                     error: "Noma'lum buyruq...",
                 };
-                M.push(obj);
-                manipulateLast($("#messages"));
+                GAME.addAndUpdate(obj);
             },
-            () => {},
-            () => {},
-            () => {},
+            /* EPISODE 2, TEST */
             () => {
                 const obj = {
                     ...M[0],
-                    msg:
-                        "Har bir epizod uchun alohida buyruqlar ro'yhati mavjud. Olish uchun, avval biror epizodni tanlab 'yordam' buyrug'ini bering.",
+                    msg: GAME.snippets.freeSnippet,
                 };
-                M.push(obj);
-                manipulateLast($("#messages"));
+                GAME.addAndUpdate(obj);
             },
+            /* EPISODE 3, TEST */
             () => {
                 const obj = {
                     ...M[0],
-                    msg: `
-                        <p>Dasturlovchi: Humoyun</p>
-                        <p>Hikoya: Madaminov Muhammadjon</p>
-                        <p style="font-style: italic">Har bir epizod real hayotga asoslangan.</span>
-                        `,
+                    msg: GAME.snippets.freeSnippet,
                 };
-                M.push(obj);
-                manipulateLast($("#messages"));
+                GAME.addAndUpdate(obj);
             },
+            /* EPISODE 4, TEST */
+            () => {
+                const obj = {
+                    ...M[0],
+                    msg: GAME.snippets.freeSnippet,
+                };
+                GAME.addAndUpdate(obj);
+            },
+            /* HELP */
+            () => {
+                const obj = {
+                    ...M[0],
+                    msg: GAME.snippets.generalHelp,
+                };
+                GAME.addAndUpdate(obj);
+            },
+            /* ABOUT */
+            () => {
+                const obj = {
+                    ...M[0],
+                    msg: GAME.snippets.aboutSection,
+                };
+                GAME.addAndUpdate(obj);
+            },
+            /* RESET */
             () => {
                 $("#messages").innerHTML = "";
                 manipulateLast($("#messages"));
             },
         ],
-        error: `
-        Hikoyalardan birini tanlang:
-            <p class="opt">1: Annabel #Episode_1 (test)</p>
-            <p class="opt">2: Blank</p>
-            <p class="opt">3: Blank</p>
-            <p class="opt">4: Blank</p>
-            <p class="opt">5: Yordam</p>
-            <p class="opt">6: Haqida</p>
-            <p class="opt">7: CLEAR</p>
-        `,
+        error: GAME.snippets.chooseEpz,
     },
 ];
 
@@ -355,10 +414,10 @@ $M({
                 _e.target.value &&
                 _e.target.value.length < 40
             ) {
-                HISTORY.push(_e.target.value);
+                GAME.keyboardHistory.push(_e.target.value);
                 addArray(M, _e.target.value, "user");
                 _e.target.value = "";
-                scrollToBottom("container");
+                GAME.scrollToBottom("container");
             }
         },
         adv: {
@@ -369,24 +428,44 @@ $M({
     },
 });
 
+// MUSIC
 const music = new Audio();
 music.src = "../res/bg.mp3";
 music.volume = 0.1;
 
 let index = -1;
 window.addEventListener("keydown", function (_e) {
-    if (!clicked) {
+    if (!GAME.clicked) {
         music.play();
     }
-    clicked = true;
+    GAME.clicked = true;
     switch (_e.key) {
         case "ArrowUp":
-            ++index > HISTORY.length - 1 ? (index = HISTORY.length - 1) : index;
-            document.querySelector("#user-input").value = HISTORY[index];
+            ++index > GAME.keyboardHistory.length - 1
+                ? (index = GAME.keyboardHistory.length - 1)
+                : index;
+            document.querySelector("#user-input").value =
+                GAME.keyboardHistory[index];
             break;
         case "ArrowDown":
             --index < 0 ? (index = 0) : index;
-            document.querySelector("#user-input").value = HISTORY[index];
+            document.querySelector("#user-input").value =
+                GAME.keyboardHistory[index];
             break;
     }
 });
+
+window.addEventListener("contextmenu", function (_e) {
+    _e.preventDefault();
+});
+
+init();
+function init() {
+    document.querySelectorAll(".auto").forEach((_el) => {
+        _el.onclick = (_) => {
+            let el = document.querySelector("#user-input");
+            el.value = _.target.textContent.replace(/[\[\]]/g, "");
+            el.focus();
+        };
+    });
+}
