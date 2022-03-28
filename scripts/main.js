@@ -365,6 +365,7 @@ function manipulateLast(_parent) {
 
         // can insert entities...
         el.innerHTML = lastOne.msg;
+        init();
     }
     _parent.appendChild(el);
 }
