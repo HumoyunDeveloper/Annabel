@@ -183,14 +183,14 @@ const GAME = {
     keyboardHistory: [],
     snippets: {
         freeSnippet: "Uzr, bu bo'lim hozircha bo'sh :(",
-        chooseEpz: `Hikoyalardan birini tanlang <span style='font-style: italic'>(raqam bilan)</span>:
+        chooseEpz: `Bo'limlardan birini tanlang <span style='font-style: italic'>(raqam bilan)</span>:
             <p class="opt"><span class="auto">[1]</span> Annabel #Episode_1 (test)</p>
             <p class="opt"><span class="auto">[2]</span> Blank</p>
             <p class="opt"><span class="auto">[3]</span> Blank</p>
             <p class="opt"><span class="auto">[4]</span> Blank</p>
             <p class="opt"><span class="auto">[5]</span> Yordam</p>
             <p class="opt"><span class="auto">[6]</span> Haqida</p>
-            <p class="opt"><span class="auto">[7]</span> CLEAR</p>
+            <p class="opt"><span class="auto">[7]</span> Tarixni Tozalash</p>
             `,
         aboutSection: `
                         <p>Dasturlovchi: Humoyun</p>
