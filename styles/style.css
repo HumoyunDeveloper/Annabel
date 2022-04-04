@@ -7,7 +7,7 @@
     --button-bg-color: #111;
     --button-text-color: #fefefe;
     --background-gradient: linear-gradient(90deg, #9ce756, rgb(38, 243, 243));
-    --font-family: mono2;
+    --font-family: mono2, monospace;
     --font-size: 27px;
 }
 
